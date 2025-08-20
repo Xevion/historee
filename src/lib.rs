@@ -7,6 +7,6 @@ pub mod stats;
 pub mod utils;
 
 pub use args::{Args, Browser};
-pub use browser::analyze_browser_history;
+pub use browser::{analyze_browser_history, BrowserHandler};
 pub use patterns::init_default_patterns;
 pub use stats::{AnalysisResult, DomainStats};

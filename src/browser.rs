@@ -7,6 +7,49 @@ use tracing::{info, warn};
 
 use crate::{args::Browser, patterns, sqlite, stats::AnalysisResult, Args};
 
+/// Trait for browser-specific operations
+pub trait BrowserHandler {
+    fn get_history_path(&self) -> Result<std::path::PathBuf>;
+    fn get_date_range(&self, conn: &Connection) -> Result<(String, String, i64)>;
+    fn extract_domains(
+        &self,
+        conn: &Connection,
+        patterns: &[regex::Regex],
+        workers: Option<usize>,
+    ) -> Result<crate::stats::DomainStats>;
+}
+
+impl BrowserHandler for Browser {
+    fn get_history_path(&self) -> Result<std::path::PathBuf> {
+        match self {
+            Browser::Firefox => sqlite::get_firefox_history_path(),
+            Browser::Zen => sqlite::get_zen_history_path(),
+            _ => sqlite::get_browser_history_path(self),
+        }
+    }
+
+    fn get_date_range(&self, conn: &Connection) -> Result<(String, String, i64)> {
+        match self {
+            Browser::Firefox | Browser::Zen => sqlite::get_firefox_date_range(conn),
+            _ => sqlite::get_date_range(conn),
+        }
+    }
+
+    fn extract_domains(
+        &self,
+        conn: &Connection,
+        patterns: &[regex::Regex],
+        workers: Option<usize>,
+    ) -> Result<crate::stats::DomainStats> {
+        match self {
+            Browser::Firefox | Browser::Zen => {
+                sqlite::extract_domains_from_firefox_urls(conn, patterns, workers)
+            }
+            _ => sqlite::extract_domains_from_urls(conn, patterns, workers),
+        }
+    }
+}
+
 pub fn analyze_browser_history(args: &Args) -> Result<AnalysisResult> {
     if args.all_browsers {
         analyze_all_browsers(args)
@@ -24,12 +67,7 @@ fn analyze_single_browser(browser: &Browser, args: &Args) -> Result<AnalysisResu
         "Starting browser history analysis"
     );
 
-    let history_path = match browser {
-        Browser::Firefox => sqlite::get_firefox_history_path()?,
-        Browser::Zen => sqlite::get_zen_history_path()?,
-        _ => sqlite::get_browser_history_path(browser)?,
-    };
-
+    let history_path = browser.get_history_path()?;
     let temp_history_path =
         sqlite::copy_history_database(&history_path, args.temp_path.as_deref())?;
 
@@ -46,17 +84,8 @@ fn analyze_single_browser(browser: &Browser, args: &Args) -> Result<AnalysisResu
         "Connected to database"
     );
 
-    let date_range = match browser {
-        Browser::Firefox | Browser::Zen => sqlite::get_firefox_date_range(&conn)?,
-        _ => sqlite::get_date_range(&conn)?,
-    };
-
-    let stats = match browser {
-        Browser::Firefox | Browser::Zen => {
-            sqlite::extract_domains_from_firefox_urls(&conn, &patterns, args.workers)?
-        }
-        _ => sqlite::extract_domains_from_urls(&conn, &patterns, args.workers)?,
-    };
+    let date_range = browser.get_date_range(&conn)?;
+    let stats = browser.extract_domains(&conn, &patterns, args.workers)?;
 
     info!(
         action = "disconnect",
