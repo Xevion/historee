@@ -2,12 +2,12 @@
 
 A fast Rust tool to analyze browser history and extract unique domains with visit counts.
 
-- Analyze browser history databases
-- Extract and normalize domain names from URLs
-- Count visits per domain with parallel processing
+- Analyze multiple browser history databases (Chrome, Edge, Firefox, Vivaldi, Zen)
+- Extract and normalize domain names from URLs with parallel processing
 - Custom domain pattern matching for normalization
 - Privacy options with domain redaction
 - Structured logging with tracing
+- Cross-platform support with platform-specific optimizations
 
 ## Installation
 
@@ -19,6 +19,9 @@ cargo build --release
 
 # Or install directly with cargo
 cargo install --path .
+
+# Or use the Justfile
+just install
 ```
 
 ## Usage
@@ -26,8 +29,18 @@ cargo install --path .
 ### Basic Analysis
 
 ```bash
-# Analyze browser history
+# Analyze default browser (Vivaldi)
 historee
+
+# Analyze specific browser
+historee --browser chrome
+historee --browser firefox
+historee --browser edge
+historee --browser vivaldi
+historee --browser zen
+
+# Analyze all supported browsers
+historee --all-browsers
 
 # Show top 10 most visited domains
 historee --top 10
@@ -53,6 +66,9 @@ historee --workers 4
 
 # Enable verbose logging
 historee --verbose
+
+# Specify custom temporary file path
+historee --temp-path /tmp/custom_history.db
 ```
 
 ### Initialize Default Patterns
@@ -65,7 +81,7 @@ historee --init
 ## Output Example
 
 ```
---- Browser History Analysis ---
+--- Vivaldi History Analysis ---
 Date range: February 9, 2025 to August 20, 2025 (191 days)
 Total unique domains found: 4,132
 Domains removed (no valid TLD): 976
@@ -80,9 +96,8 @@ Top 5 most visited domains:
 
 ## Supported Browsers
 
+- **Chrome** (Windows, macOS, Linux)
+- **Edge** (Windows, macOS, Linux)
+- **Firefox** (Windows, macOS, Linux)
 - **Vivaldi** (Windows, macOS, Linux)
-- More browsers coming soon
-
-## License
-
-[Add your license here]
+- **Zen** (Windows, macOS, Linux)
