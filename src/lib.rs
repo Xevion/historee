@@ -8,4 +8,5 @@ pub mod utils;
 
 pub use args::Args;
 pub use browser::analyze_browser_history;
+pub use patterns::init_default_patterns;
 pub use stats::{AnalysisResult, DomainStats};

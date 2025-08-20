@@ -44,4 +44,8 @@ pub struct Args {
     /// Redact domain names for privacy
     #[arg(long)]
     pub redact: bool,
+
+    /// Initialize domain_patterns.txt with default patterns
+    #[arg(long)]
+    pub init: bool,
 }

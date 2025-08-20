@@ -2,11 +2,22 @@ use anyhow::Result;
 use clap::Parser;
 use log::error;
 
-use browser_unique_domains::{browser, utils, Args};
+use browser_unique_domains::{browser, patterns, utils, Args};
 
 fn main() -> Result<()> {
     let args = Args::parse();
     utils::setup_logging(args.verbose);
+
+    // Handle --init option
+    if args.init {
+        match patterns::init_default_patterns() {
+            Ok(()) => return Ok(()),
+            Err(e) => {
+                error!("Error: {}", e);
+                std::process::exit(1);
+            }
+        }
+    }
 
     // Validate arguments
     utils::validate_args(&args)?;

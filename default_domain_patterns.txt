@@ -54,4 +54,3 @@ Common subdomain patterns for major services
 ^.+\.(homedepot\.com)$
 ^.^.+\.(librarycustomer\.org)$
 ^.+\.(ed\.gov)$
-
