@@ -1,6 +1,7 @@
 [package]
 name = "historee"
-version = "0.1.0"
+authors = ["Ryan Walters <ryan@walters.to>"]
+version = "0.2.0"
 edition = "2021"
 
 [dependencies]

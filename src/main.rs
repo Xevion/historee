@@ -13,7 +13,7 @@ fn main() -> Result<()> {
         match patterns::init_default_patterns() {
             Ok(()) => return Ok(()),
             Err(e) => {
-                error!("Error: {}", e);
+                error!("Error: {e}");
                 std::process::exit(1);
             }
         }
@@ -28,7 +28,7 @@ fn main() -> Result<()> {
             Ok(())
         }
         Err(e) => {
-            error!("Error: {}", e);
+            error!("Error: {e}");
             std::process::exit(1);
         }
     }

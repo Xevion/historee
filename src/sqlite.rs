@@ -28,7 +28,7 @@ pub fn get_browser_history_path(browser: &str) -> Result<PathBuf> {
         ),
     };
 
-    info!("Browser history path: {:?}", path);
+    info!("Browser history path: {path:?}");
     Ok(path)
 }
 
@@ -43,8 +43,8 @@ pub fn copy_history_database(history_path: &Path, temp_path: Option<&Path>) -> R
         ))
     });
 
-    info!("Source: {:?}", history_path);
-    info!("Destination: {:?}", temp_path);
+    info!("Source: {history_path:?}");
+    info!("Destination: {temp_path:?}");
 
     if !history_path.exists() {
         anyhow::bail!("History file not found at {:?}", history_path);
@@ -131,7 +131,7 @@ pub fn extract_domains_from_urls(
         std::cmp::min(cpu_count, 8)
     });
 
-    info!("Using {} workers", max_workers);
+    info!("Using {max_workers} workers");
 
     let processing_start = Instant::now();
 

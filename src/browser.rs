@@ -31,7 +31,7 @@ pub fn analyze_browser_history(args: &Args) -> Result<AnalysisResult> {
 
     // Clean up temporary file
     if let Err(e) = fs::remove_file(&temp_history_path) {
-        warn!("Failed to remove temporary file: {}", e);
+        warn!("Failed to remove temporary file: {e}");
     }
 
     let total_time = total_start_time.elapsed();
@@ -56,7 +56,7 @@ pub fn print_analysis_results(result: &AnalysisResult, args: &Args) {
             crate::utils::format_number(*days_between as u32)
         );
     } else {
-        println!("Date range: {} to {}", earliest_date, latest_date);
+        println!("Date range: {earliest_date} to {latest_date}");
     }
 
     println!(

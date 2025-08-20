@@ -15,7 +15,7 @@ pub fn load_domain_patterns(pattern_file_path: Option<&Path>) -> Result<Vec<Rege
     let mut patterns = Vec::new();
 
     if let Some(path) = pattern_file_path {
-        info!("Loading patterns from specified file: {:?}", path);
+        info!("Loading patterns from specified file: {path:?}");
         if !path.exists() {
             anyhow::bail!("Pattern file not found: {:?}", path);
         }
@@ -37,7 +37,7 @@ pub fn load_domain_patterns(pattern_file_path: Option<&Path>) -> Result<Vec<Rege
         // Try default file
         let default_file = Path::new("domain_patterns.txt");
         if default_file.exists() {
-            info!("Loading patterns from default file: {:?}", default_file);
+            info!("Loading patterns from default file: {default_file:?}");
             let content = fs::read_to_string(default_file)?;
             for (line_num, line) in content.lines().enumerate() {
                 let line = line.trim();
