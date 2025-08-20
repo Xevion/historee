@@ -174,7 +174,7 @@ pub fn print_analysis_results(result: &AnalysisResult, args: &Args) {
         args.browser.to_string()
     };
 
-    println!("\n--- {} History Analysis ---", browser_name);
+    println!("\n--- {browser_name} History Analysis ---");
 
     if *days_between > 0 {
         println!(

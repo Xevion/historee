@@ -71,6 +71,17 @@ pub fn get_browser_history_path(browser: &Browser) -> Result<PathBuf> {
         ),
     };
 
+    // Warn users on non-Windows platforms that browser handling hasn't been tested
+    if system != "windows" {
+        warn!(
+            action = "platform_warning",
+            component = "browser_path",
+            platform = system,
+            browser = ?browser,
+            "Browser handling has not been tested on this platform. Paths may be incorrect."
+        );
+    }
+
     info!(action = "resolve", component = "browser_path", browser = ?browser, path = ?path, "Browser history path resolved");
     Ok(path)
 }
