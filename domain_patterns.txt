@@ -1,0 +1,57 @@
+# Domain normalization patterns
+# Each pattern must provide 1 group that matches the 'normalized' section of the domain
+# Lines starting with # are comments and will be ignored
+
+# CDN and hosting services
+^.+\.(cloudfront\.net)$
+^.+\.(amazonaws\.com)$
+^.+\.(herokuapp\.com)$
+^.+\.(netlify\.app)$
+^.+\.(vercel\.app)$
+^.+\.(github\.io)$
+^.+\.(firebaseapp\.com)$
+^.+\.(appspot\.com)$
+^.+\.(azurewebsites\.net)$
+
+# Additional CDN patterns
+^.+\.(cdn\.com)$
+^.+\.(cdn\.net)$
+^.+\.(cdn\.org)$
+
+# Localhost variations (normalize all localhost:port to localhost)
+^(localhost):\d+$
+^(\d+\.\d+\.\d+\.\d+):\d+$
+
+Common subdomain patterns for major services
+^.+\.(google\.com)$
+^.+\.(google\.codes)$
+^.+\.(amazon\.com)$
+^.+\.(github\.com)$
+^.+\.(github\.io)$
+^.+\.(microsoft\.com)$
+^.+\.(apple\.com)$
+^.+\.(itunes\.apple\.com)$
+^.+\.(icloud\.com)$
+^.+\.(amazonaws\.com)$
+^.+\.(amazonaws\.om)$
+^.+\.(aws\.az)$
+^.+\.(oraclecloud\.com)$
+^.+\.(duosecurity\.com)$
+^.+\.(betterstack\.com)$
+^.+\.(stripe\.com)$
+^.^.+\.(pipedrive\.email)$
+^.+\.(mdnplay\.dev)$
+^.+\.(codesandbox\.io)$
+^.+\.(carrd\.co)$
+^.+\.(fanbox\.cc)$
+^.+\.(dreamwidth\.org)$
+^.+\.(cytoscape\.org)$
+^.+\.(newshosting\.com)$
+^.+\.(adguard-dns\.com)$
+^.+\.(noip\.com)$
+^.+\.(ts\.net)$
+^.+\.(elaws\.us)$
+^.+\.(homedepot\.com)$
+^.^.+\.(librarycustomer\.org)$
+^.+\.(ed\.gov)$
+
