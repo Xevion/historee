@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 #[derive(Parser, Debug)]
 #[command(
-    name = "browser-unique-domains",
+    name = "historee",
     about = "Analyze browser history to find unique domains and their visit counts",
     version,
     long_about = None

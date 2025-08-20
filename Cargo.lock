@@ -113,23 +113,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a65b545ab31d687cff52899d4890855fec459eb6afe0da6417b8a18da87aa29"
 
 [[package]]
-name = "browser-unique-domains"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "chrono",
- "clap",
- "env_logger",
- "log",
- "num_cpus",
- "rayon",
- "regex",
- "rusqlite",
- "serde",
- "url",
-]
-
-[[package]]
 name = "bumpalo"
 version = "3.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -323,6 +306,23 @@ name = "hermit-abi"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc0fef456e4baa96da950455cd02c081ca953b141298e41db3fc7e36b1da849c"
+
+[[package]]
+name = "historee"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "clap",
+ "env_logger",
+ "log",
+ "num_cpus",
+ "rayon",
+ "regex",
+ "rusqlite",
+ "serde",
+ "url",
+]
 
 [[package]]
 name = "humantime"

@@ -2,7 +2,7 @@ use anyhow::Result;
 use clap::Parser;
 use log::error;
 
-use browser_unique_domains::{browser, patterns, utils, Args};
+use historee::{browser, patterns, utils, Args};
 
 fn main() -> Result<()> {
     let args = Args::parse();
