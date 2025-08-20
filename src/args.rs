@@ -1,6 +1,27 @@
 use clap::Parser;
 use std::path::PathBuf;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, clap::ValueEnum)]
+pub enum Browser {
+    Chrome,
+    Edge,
+    Firefox,
+    Vivaldi,
+    Zen,
+}
+
+impl std::fmt::Display for Browser {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Browser::Chrome => write!(f, "Chrome"),
+            Browser::Edge => write!(f, "Edge"),
+            Browser::Firefox => write!(f, "Firefox"),
+            Browser::Vivaldi => write!(f, "Vivaldi"),
+            Browser::Zen => write!(f, "Zen"),
+        }
+    }
+}
+
 #[derive(Parser, Debug)]
 #[command(
     name = "historee",
@@ -10,8 +31,12 @@ use std::path::PathBuf;
 )]
 pub struct Args {
     /// Browser to analyze
-    #[arg(short, long, default_value = "Vivaldi")]
-    pub browser: String,
+    #[arg(short, long, default_value = "vivaldi")]
+    pub browser: Browser,
+
+    /// Analyze all supported browsers
+    #[arg(long)]
+    pub all_browsers: bool,
 
     /// Number of top domains to display
     #[arg(short, long)]
