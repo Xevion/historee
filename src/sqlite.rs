@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use chrono::{DateTime, Utc};
-use log::{info, warn};
+use tracing::{info, warn};
 use rayon::prelude::*;
 use rusqlite::{Connection, Result as SqliteResult};
 use std::env;
@@ -28,13 +28,13 @@ pub fn get_browser_history_path(browser: &str) -> Result<PathBuf> {
         ),
     };
 
-    info!("Browser history path: {path:?}");
+    info!(action = "resolve", component = "browser_path", browser = browser, path = ?path, "Browser history path resolved");
     Ok(path)
 }
 
 pub fn copy_history_database(history_path: &Path, temp_path: Option<&Path>) -> Result<PathBuf> {
     let start_time = Instant::now();
-    info!("Copying browser history database");
+    info!(action = "start", component = "database_copy", "Copying browser history database");
 
     let temp_path = temp_path.map(|p| p.to_path_buf()).unwrap_or_else(|| {
         PathBuf::from(&format!(
@@ -43,8 +43,7 @@ pub fn copy_history_database(history_path: &Path, temp_path: Option<&Path>) -> R
         ))
     });
 
-    info!("Source: {history_path:?}");
-    info!("Destination: {temp_path:?}");
+    info!(action = "copy", component = "database_copy", source = ?history_path, destination = ?temp_path, "Database copy paths");
 
     if !history_path.exists() {
         anyhow::bail!("History file not found at {:?}", history_path);
@@ -53,13 +52,13 @@ pub fn copy_history_database(history_path: &Path, temp_path: Option<&Path>) -> R
     fs::copy(history_path, &temp_path)?;
 
     let copy_time = start_time.elapsed();
-    info!("Database copy completed in {:.1}ms", copy_time.as_millis());
+    info!(action = "complete", component = "database_copy", duration_ms = copy_time.as_millis(), "Database copy completed");
     Ok(temp_path)
 }
 
 pub fn get_date_range(conn: &Connection) -> Result<(String, String, i64)> {
     let start_time = Instant::now();
-    info!("Querying visit date range");
+    info!(action = "start", component = "date_range_query", "Querying visit date range");
 
     let (earliest_timestamp, latest_timestamp): (Option<i64>, Option<i64>) = conn
         .query_row(
@@ -80,11 +79,13 @@ pub fn get_date_range(conn: &Connection) -> Result<(String, String, i64)> {
         let query_time = start_time.elapsed();
 
         info!(
-            "Date range: {} to {} ({} days) in {:.1}ms",
-            earliest_date.format("%B %-d, %Y"),
-            latest_date.format("%B %-d, %Y"),
+            action = "complete",
+            component = "date_range_query",
+            earliest_date = earliest_date.format("%B %-d, %Y").to_string(),
+            latest_date = latest_date.format("%B %-d, %Y").to_string(),
             days_between,
-            query_time.as_millis()
+            duration_ms = query_time.as_millis(),
+            "Date range query completed"
         );
 
         Ok((
@@ -95,8 +96,10 @@ pub fn get_date_range(conn: &Connection) -> Result<(String, String, i64)> {
     } else {
         let query_time = start_time.elapsed();
         warn!(
-            "No visit data found (query took {:.1}ms)",
-            query_time.as_millis()
+            action = "complete",
+            component = "date_range_query",
+            duration_ms = query_time.as_millis(),
+            "No visit data found"
         );
         Ok((
             "No data available".to_string(),
@@ -112,7 +115,7 @@ pub fn extract_domains_from_urls(
     max_workers: Option<usize>,
 ) -> Result<crate::stats::DomainStats> {
     let start_time = Instant::now();
-    info!("Starting domain extraction from URLs");
+    info!(action = "start", component = "domain_extraction", "Starting domain extraction from URLs");
 
     let urls: Vec<String> = conn
         .prepare("SELECT url FROM urls")?
@@ -121,9 +124,11 @@ pub fn extract_domains_from_urls(
 
     let query_time = start_time.elapsed();
     info!(
-        "Found {} URLs to process (query took {:.1}ms)",
-        urls.len(),
-        query_time.as_millis()
+        action = "query",
+        component = "domain_extraction",
+        url_count = urls.len(),
+        duration_ms = query_time.as_millis(),
+        "Found URLs to process"
     );
 
     let max_workers = max_workers.unwrap_or_else(|| {
@@ -131,7 +136,7 @@ pub fn extract_domains_from_urls(
         std::cmp::min(cpu_count, 8)
     });
 
-    info!("Using {max_workers} workers");
+    info!(action = "configure", component = "domain_extraction", worker_count = max_workers, "Using workers for processing");
 
     let processing_start = Instant::now();
 
@@ -186,14 +191,18 @@ pub fn extract_domains_from_urls(
     let total_processing_time = processing_start.elapsed();
     let total_time = start_time.elapsed();
     info!(
-        "Domain extraction completed: {} unique domains, {} removed",
-        all_stats.unique_domains.len(),
-        all_stats.domains_removed
+        action = "complete",
+        component = "domain_extraction",
+        unique_domains = all_stats.unique_domains.len(),
+        domains_removed = all_stats.domains_removed,
+        "Domain extraction completed"
     );
     info!(
-        "Processing time: {:.1}ms, Total time: {:.1}ms",
-        total_processing_time.as_millis(),
-        total_time.as_millis()
+        action = "timing",
+        component = "domain_extraction",
+        processing_time_ms = total_processing_time.as_millis(),
+        total_time_ms = total_time.as_millis(),
+        "Domain extraction timing"
     );
 
     Ok(all_stats)

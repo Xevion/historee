@@ -1,12 +1,25 @@
-use std::env;
+use tracing_subscriber::{fmt, EnvFilter};
 
 pub fn setup_logging(verbose: bool) {
-    if verbose {
-        env::set_var("RUST_LOG", "info");
+    let filter = if verbose {
+        EnvFilter::from_default_env().add_directive("info".parse().unwrap())
     } else {
-        env::set_var("RUST_LOG", "error");
-    }
-    env_logger::init();
+        EnvFilter::from_default_env().add_directive("error".parse().unwrap())
+    };
+
+    fmt()
+        .with_timer(fmt::time::LocalTime::new(
+            time::macros::format_description!(
+                "[hour]:[minute]:[second].[subsecond digits:3] [period]"
+            ),
+        ))
+        .with_target(false)
+        .with_thread_ids(false)
+        .with_thread_names(false)
+        .with_file(false)
+        .with_line_number(false)
+        .with_env_filter(filter)
+        .init();
 }
 
 pub fn format_number(num: u32) -> String {

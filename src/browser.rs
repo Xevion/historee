@@ -1,14 +1,18 @@
 use anyhow::Result;
-use log::{info, warn};
 use rusqlite::Connection;
 use std::fs;
 use std::time::Instant;
+use tracing::{info, warn};
 
 use crate::{patterns, sqlite, stats::AnalysisResult, Args};
 
 pub fn analyze_browser_history(args: &Args) -> Result<AnalysisResult> {
     let total_start_time = Instant::now();
-    info!("Starting browser history analysis");
+    info!(
+        action = "start",
+        component = "browser_analysis",
+        "Starting browser history analysis"
+    );
 
     let history_path = sqlite::get_browser_history_path(&args.browser)?;
     let temp_history_path =
@@ -21,23 +25,33 @@ pub fn analyze_browser_history(args: &Args) -> Result<AnalysisResult> {
     };
 
     let conn = Connection::open(&temp_history_path)?;
-    info!("Connected to database");
+    info!(
+        action = "connect",
+        component = "database",
+        "Connected to database"
+    );
 
     let date_range = sqlite::get_date_range(&conn)?;
     let stats = sqlite::extract_domains_from_urls(&conn, &patterns, args.workers)?;
 
-    info!("Closing database connection");
+    info!(
+        action = "disconnect",
+        component = "database",
+        "Closing database connection"
+    );
     drop(conn);
 
     // Clean up temporary file
     if let Err(e) = fs::remove_file(&temp_history_path) {
-        warn!("Failed to remove temporary file: {e}");
+        warn!(action = "cleanup", component = "temp_file", error = %e, "Failed to remove temporary file");
     }
 
     let total_time = total_start_time.elapsed();
     info!(
-        "Analysis completed successfully in {:.1}ms",
-        total_time.as_millis()
+        action = "complete",
+        component = "browser_analysis",
+        duration_ms = total_time.as_millis(),
+        "Analysis completed successfully"
     );
 
     Ok(AnalysisResult { date_range, stats })

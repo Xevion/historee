@@ -1,6 +1,6 @@
 use anyhow::Result;
 use clap::Parser;
-use log::error;
+use tracing::error;
 
 use historee::{browser, patterns, utils, Args};
 
