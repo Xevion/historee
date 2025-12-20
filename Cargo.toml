@@ -5,7 +5,7 @@ version = "0.2.0"
 edition = "2021"
 
 [dependencies]
-rusqlite = { version = "0.37", features = ["bundled"] }
+rusqlite = { version = "0.38", features = ["bundled"] }
 clap = { version = "4.4", features = ["derive"] }
 url = "2.4"
 regex = "1.10"
